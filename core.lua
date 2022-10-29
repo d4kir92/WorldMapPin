@@ -2,7 +2,8 @@
 local pinsize = 24
 local pinx = -1
 local piny = -1
-local dist = 0
+WMP_Dist = 0
+WMP_Clamped = false 
 
 -- libs
 local function MathIsNear( pos1, pos2, near )
@@ -22,7 +23,7 @@ local function MathC( num, min, max )
 end
 -- libs
 
-local WorldSpacePin = CreateFrame( "FRAME", "WorldSpacePin" )
+WorldSpacePin = CreateFrame( "FRAME", "WorldSpacePin" )
 WorldSpacePin:SetFrameStrata( "HIGH" )
 WorldSpacePin:SetSize( pinsize, pinsize )
 WorldSpacePin.texture = WorldSpacePin:CreateTexture( nil, "OVERLAY" )
@@ -86,7 +87,7 @@ function WMPMapPinX()
 			yc = 1 - yc -- Fix for Y
 			
 			local res = math.sqrt( math.pow( xc - xp, 2 ) + math.pow( math.abs( yc - yp ), 2 ) )
-			dist = tonumber( format( "%0.0f", res * 1000 ) )
+			WMP_Dist = tonumber( format( "%0.0f", res * 1000 ) )
 
 			xc = ( xc - 0.5 ) * ratio + 0.5
 			xp = ( xp - 0.5 ) * ratio + 0.5
@@ -141,7 +142,7 @@ function WMPUpdatePinPos()
 		local sw = WorldMapFrame.ScrollContainer.Child:GetWidth() * scale
 		local sh = WorldMapFrame.ScrollContainer.Child:GetHeight() * scale
 
-		WorldSpacePin.text:SetText( dist .. "m" )
+		WorldSpacePin.text:SetText( WMP_Dist .. "m" )
 		WorldSpacePin:Show()
 		WorldMapPin:SetPoint( "BOTTOMLEFT", WorldMapFrame.ScrollContainer.Child, "BOTTOMLEFT", sw * pinx - 10, sh * piny - 10 )
 		WorldMapPin:Show()
