@@ -3,6 +3,7 @@ local pinsize = 24
 local pinx = -1
 local piny = -1
 WMP_Dist = 0
+WMP_Dist_F = 0
 WMP_Clamped = false 
 
 -- libs
@@ -87,7 +88,8 @@ function WMPMapPinX()
 			yc = 1 - yc -- Fix for Y
 			
 			local res = math.sqrt( math.pow( xc - xp, 2 ) + math.pow( math.abs( yc - yp ), 2 ) )
-			WMP_Dist = tonumber( format( "%0.0f", res * 1000 ) )
+			WMP_Dist = res * 1000
+			WMP_Dist_F = tonumber( format( "%0.0f", WMP_Dist ) )
 
 			xc = ( xc - 0.5 ) * ratio + 0.5
 			xp = ( xp - 0.5 ) * ratio + 0.5
@@ -142,7 +144,7 @@ function WMPUpdatePinPos()
 		local sw = WorldMapFrame.ScrollContainer.Child:GetWidth() * scale
 		local sh = WorldMapFrame.ScrollContainer.Child:GetHeight() * scale
 
-		WorldSpacePin.text:SetText( WMP_Dist .. "m" )
+		WorldSpacePin.text:SetText( WMP_Dist_F .. "m" )
 		WorldSpacePin:Show()
 		WorldMapPin:SetPoint( "BOTTOMLEFT", WorldMapFrame.ScrollContainer.Child, "BOTTOMLEFT", sw * pinx - 10, sh * piny - 10 )
 		WorldMapPin:Show()
