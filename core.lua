@@ -22,6 +22,24 @@ local function MathC( num, min, max )
 	end
 	return num
 end
+
+-- Memory Fix
+local MapRects = {}
+local TempVec2D = CreateVector2D(0,0)
+function GetPlayerMapPos( MapID )
+    local R,P,_ = MapRects[MapID],TempVec2D
+    if not R then
+        R = {}
+        _, R[1] = C_Map.GetWorldPosFromMapPos(MapID,CreateVector2D(0,0))
+        _, R[2] = C_Map.GetWorldPosFromMapPos(MapID,CreateVector2D(1,1))
+        R[2]:Subtract(R[1])
+        MapRects[MapID] = R
+    end
+    P.x, P.y = UnitPosition('Player')
+    P:Subtract(R[1])
+    return (1/R[2].y)*P.y, (1/R[2].x)*P.x
+end
+-- Memory Fix
 -- libs
 
 WorldSpacePin = CreateFrame( "FRAME", "WorldSpacePin" )
@@ -77,13 +95,13 @@ end
 function WMPMapPinX()
 	local mapID = C_Map.GetBestMapForUnit( "PLAYER" )
 	if mapID then
-		local pos = C_Map.GetPlayerMapPosition( mapID, "PLAYER" )
-		if pos then
+		local posx, posy = GetPlayerMapPos( mapID )
+		if posx and posy then
 			local sw = WorldMapFrame.ScrollContainer:GetWidth()
 			local sh = WorldMapFrame.ScrollContainer:GetHeight()
 			local ratio = sw / sh
 
-			local xc, yc = pos.x, pos.y -- Character X, Y
+			local xc, yc = posx, posy -- Character X, Y
 			local xp, yp = pinx, piny -- Pin X, Y
 			yc = 1 - yc -- Fix for Y
 			
@@ -116,7 +134,7 @@ end
 function HasCoords()
 	local mapID = C_Map.GetBestMapForUnit( "PLAYER" )
 	if mapID then
-		local pos = C_Map.GetPlayerMapPosition( mapID, "PLAYER" )		
+		local pos = GetPlayerMapPos( mapID )	
 		if pos then
 			return true
 		end
@@ -125,6 +143,12 @@ function HasCoords()
 end
 
 function WMPUpdatePinPos()
+	HasCoords()
+	local mapID = C_Map.GetBestMapForUnit( "PLAYER" )
+	if mapID then
+		local x, y = GetPlayerMapPos( mapID )
+	end
+
 	if HasCoords() and pinx >= 0 and piny >= 0 then
 		local alpha = WMPMapPinX()
 		if alpha > -3 and alpha < 3 then
