@@ -1,10 +1,19 @@
 
+local AddOnName, WorldMapPin = ...
+
 local pinsize = 24
 local pinx = -1
 local piny = -1
-WMP_Dist = 0
-WMP_Dist_F = 0
-WMP_Clamped = false 
+local WMP_Dist = 0
+local WMP_Dist_F = 0
+
+function WMPGetDistance()
+	return WMP_Dist
+end
+
+function WMPGetDistanceF()
+	return WMP_Dist_F
+end
 
 -- libs
 local function MathIsNear( pos1, pos2, near )
@@ -26,8 +35,8 @@ end
 -- Memory Fix
 local MapRects = {}
 local TempVec2D = CreateVector2D(0,0)
-function GetPlayerMapPos( MapID )
-    local R,P,_ = MapRects[MapID],TempVec2D
+local function GetPlayerMapPos( MapID )
+	local R,P,_ = MapRects[MapID],TempVec2D
     if not R then
         R = {}
         _, R[1] = C_Map.GetWorldPosFromMapPos( MapID, CreateVector2D(0,0) )
@@ -57,7 +66,7 @@ WorldSpacePin.texture:SetVertexColor( 1, 1, 1, 1 )
 WorldSpacePin.text = WorldSpacePin:CreateFontString( nil, "OVERLAY" )
 WorldSpacePin.text:SetFont( STANDARD_TEXT_FONT, 10, "" )
 WorldSpacePin.text:SetPoint( "TOP", WorldSpacePin, "BOTTOM", 0, 0 )
-WorldSpacePin.text:SetText( "LOADING" )
+WorldSpacePin.text:SetText( "LOADING (WMP)" )
 
 local WorldMapPin = CreateFrame( "FRAME", "WorldMapPin", WorldMapFrame.ScrollContainer )
 WorldMapPin:SetSize( 20, 20 )
@@ -86,7 +95,7 @@ WorldMapFrame.ScrollContainer.Child:SetScript( "OnUpdate", function( self, btn )
 	end
 end )
 
-function WMPMapPlayerAlpha()
+function WorldMapPin:MapPlayerAlpha()
 	facing = GetPlayerFacing()
 	if facing == nil then
 		--print( "facing == nil" )
@@ -96,7 +105,7 @@ function WMPMapPlayerAlpha()
 	return facing / ( 2 * math.pi ) * 360
 end
 
-function WMPMapPinX()
+function WorldMapPin:MapPinX()
 	local mapID = C_Map.GetBestMapForUnit( "PLAYER" )
 	if mapID then
 		local posx, posy = GetPlayerMapPos( mapID )
@@ -116,7 +125,7 @@ function WMPMapPinX()
 			xc = ( xc - 0.5 ) * ratio + 0.5
 			xp = ( xp - 0.5 ) * ratio + 0.5
 
-			local ca = WMPMapPlayerAlpha() -- 0-360
+			local ca = WorldMapPin:MapPlayerAlpha() -- 0-360
 
 			local rx = acos(   (   ( xc - xp ) * sin( ca ) + ( yp - yc ) * cos( ca )   )   /   (   math.sqrt( math.pow( ( xp - xc ), 2 ) + math.pow( yp - yc, 2 ) )   )   )
 
@@ -135,7 +144,7 @@ function WMPMapPinX()
 	end
 end
 
-function HasCoords()
+function WorldMapPin:HasCoords()
 	local mapID = C_Map.GetBestMapForUnit( "PLAYER" )
 	if mapID then
 		local pos = GetPlayerMapPos( mapID )	
@@ -146,15 +155,9 @@ function HasCoords()
 	return false
 end
 
-function WMPUpdatePinPos()
-	HasCoords()
-	local mapID = C_Map.GetBestMapForUnit( "PLAYER" )
-	if mapID then
-		local x, y = GetPlayerMapPos( mapID )
-	end
-
-	if HasCoords() and pinx >= 0 and piny >= 0 then
-		local alpha = WMPMapPinX()
+function WorldMapPin:UpdatePinPos()
+	if WorldMapPin:HasCoords() and pinx >= 0 and piny >= 0 then
+		local alpha = WorldMapPin:MapPinX()
 		if alpha > -3 and alpha < 3 then
 			WorldSpacePin.texture:SetTexture( "Interface\\COMMON\\Indicator-Green" )
 		elseif alpha > 85 or alpha < -85 then
@@ -180,6 +183,6 @@ function WMPUpdatePinPos()
 		WorldSpacePin:Hide()
 		WorldMapPin:Hide()		
 	end
-	C_Timer.After( 0.01, WMPUpdatePinPos )
+	C_Timer.After( 0.01, WorldMapPin.UpdatePinPos )
 end
-WMPUpdatePinPos()
+WorldMapPin:UpdatePinPos()
