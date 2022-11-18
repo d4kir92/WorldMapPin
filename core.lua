@@ -7,11 +7,11 @@ local piny = -1
 local WMP_Dist = 0
 local WMP_Dist_F = 0
 
-function WMPGetDistance()
+function WorldMapPin_GetDistance()
 	return WMP_Dist
 end
 
-function WMPGetDistanceF()
+function WorldMapPin_GetDistanceF()
 	return WMP_Dist_F
 end
 
