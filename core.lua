@@ -4,7 +4,6 @@ local pinx = -1
 local piny = -1
 local WMP_Dist = 0
 local WMP_Dist_F = 0
-
 function WorldMapPin_GetDistance()
 	return WMP_Dist
 end
@@ -33,10 +32,8 @@ end
 -- Memory Fix
 local MapRects = {}
 local TempVec2D = CreateVector2D(0, 0)
-
 local function GetPlayerMapPos(MapID)
 	local R, P, _ = MapRects[MapID], TempVec2D
-
 	if not R then
 		R = {}
 		_, R[1] = C_Map.GetWorldPosFromMapPos(MapID, CreateVector2D(0, 0))
@@ -46,7 +43,6 @@ local function GetPlayerMapPos(MapID)
 	end
 
 	P.x, P.y = UnitPosition("Player")
-
 	if P.x and P.y then
 		P:Subtract(R[1])
 
@@ -74,33 +70,31 @@ WMP:SetSize(20, 20)
 WMP.texture = WMP:CreateTexture(nil, "OVERLAY")
 WMP.texture:SetAllPoints(WMP)
 WMP.texture:SetTexture("Interface\\COMMON\\Indicator-Green")
-
-WorldMapFrame.ScrollContainer.Child:SetScript("OnUpdate", function(self, btn)
-	self.wmpswitch = self.wmpswitch or false
-
-	if IsMouseButtonDown("LeftButton") and IsControlKeyDown() then
-		local x, y = WorldMapFrame.ScrollContainer:GetNormalizedCursorPosition()
-		y = 1 - y
-
-		if self.wmpswitch == false then
-			self.wmpswitch = true
-
-			if MathIsNear(x, pinx, 0.01) and MathIsNear(y, piny, 0.01) then
-				pinx = -1
-				piny = -1
-			else
-				pinx = x
-				piny = y
+WorldMapFrame.ScrollContainer.Child:SetScript(
+	"OnUpdate",
+	function(self, btn)
+		self.wmpswitch = self.wmpswitch or false
+		if IsMouseButtonDown("LeftButton") and IsControlKeyDown() then
+			local x, y = WorldMapFrame.ScrollContainer:GetNormalizedCursorPosition()
+			y = 1 - y
+			if self.wmpswitch == false then
+				self.wmpswitch = true
+				if MathIsNear(x, pinx, 0.01) and MathIsNear(y, piny, 0.01) then
+					pinx = -1
+					piny = -1
+				else
+					pinx = x
+					piny = y
+				end
 			end
+		else
+			self.wmpswitch = false
 		end
-	else
-		self.wmpswitch = false
 	end
-end)
+)
 
 function WorldMapPin:MapPlayerAlpha()
 	facing = GetPlayerFacing()
-
 	if facing == nil then
 		facing = 0
 	end
@@ -110,10 +104,8 @@ end
 
 function WorldMapPin:MapPinX()
 	local mapID = C_Map.GetBestMapForUnit("PLAYER")
-
 	if mapID then
 		local posx, posy = GetPlayerMapPos(mapID)
-
 		if posx and posy then
 			local sw = WorldMapFrame.ScrollContainer:GetWidth()
 			local sh = WorldMapFrame.ScrollContainer:GetHeight()
@@ -129,7 +121,6 @@ function WorldMapPin:MapPinX()
 			local ca = WorldMapPin:MapPlayerAlpha() -- 0-360
 			local rx = acos(((xc - xp) * sin(ca) + (yp - yc) * cos(ca)) / math.sqrt(math.pow(xp - xc, 2) + math.pow(yp - yc, 2)))
 			local cr = (xp - xc) * cos(ca) + (yp - yc) * sin(ca)
-
 			if cr > 0 then
 				rx = rx * -1
 			end
@@ -138,16 +129,13 @@ function WorldMapPin:MapPinX()
 		else
 			return 0
 		end
-		--print( "pos invalid" )
 	else
 		return 0
 	end
-	--print( "mapid invalid" )
 end
 
 function WorldMapPin:HasCoords()
 	local mapID = C_Map.GetBestMapForUnit("PLAYER")
-
 	if mapID then
 		local pos = GetPlayerMapPos(mapID)
 		if pos then return true end
@@ -159,7 +147,6 @@ end
 function WorldMapPin:UpdatePinPos()
 	if WorldMapPin:HasCoords() and pinx >= 0 and piny >= 0 then
 		local alpha = WorldMapPin:MapPinX()
-
 		if alpha > -3 and alpha < 3 then
 			WorldSpacePin.texture:SetTexture("Interface\\COMMON\\Indicator-Green")
 		elseif alpha > 85 or alpha < -85 then
