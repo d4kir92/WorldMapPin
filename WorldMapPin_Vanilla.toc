@@ -1,6 +1,6 @@
 ## Interface: 11500
 
-## Version: 1.1.21
+## Version: 1.1.22
 ## Title: WorldMapPin |T134269:16:16:0:0|t by |cff3FC7EBD4KiR |T132115:16:16:0:0|t 
 ## Notes: Can Make A World Map Pin
 ## Author: D4KiR
@@ -9,5 +9,7 @@
 ## SavedVariablesPerCharacter: WMPTABPC
 ## X-Curse-Project-ID: 603848
 ## X-Wago-ID: Rn6V8LGd
+
+libs\D4Lib\D4Lib.xml
 
 core.lua
