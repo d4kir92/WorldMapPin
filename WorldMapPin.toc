@@ -3,7 +3,7 @@
 ## Interface-Wrath: 30403
 ## Interface: 100205
 
-## Version: 1.1.29
+## Version: 1.1.30
 ## Title: WorldMapPin by |cff3FC7EBD4KiR |T132115:16:16:0:0|t 
 ## Notes: Can Make A World Map Pin
 ## Author: D4KiR
