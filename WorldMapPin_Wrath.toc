@@ -1,6 +1,6 @@
 ## Interface: 30403
 
-## Version: 1.1.33
+## Version: 1.1.34
 ## Title: WorldMapPin |T134269:16:16:0:0|t by |cff3FC7EBD4KiR |T132115:16:16:0:0|t 
 ## Notes: Can Make A World Map Pin
 ## Author: D4KiR
