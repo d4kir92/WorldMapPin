@@ -1,5 +1,8 @@
 local _, _ = ...
 D4 = D4 or {}
+D4.LibVersion = D4.LibVersion or 0
+local D4LibVersion = 1.0
+if D4.LibVersion >= D4LibVersion then return end
 --[[ Basics ]]
 local buildNr = select(4, GetBuildInfo())
 local buildName = "CLASSIC"
@@ -125,6 +128,12 @@ function D4:IsAddOnLoaded(name)
     if C_AddOns and C_AddOns.IsAddOnLoaded then return C_AddOns.IsAddOnLoaded(name) end
     if IsAddOnLoaded then return IsAddOnLoaded(name) end
     print("[D4][IsAddOnLoaded] FAILED")
+
+    return nil
+end
+
+function D4:GetName(frameOrTexture)
+    if frameOrTexture and frameOrTexture.GetName then return frameOrTexture:GetName() end
 
     return nil
 end
