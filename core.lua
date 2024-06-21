@@ -1,4 +1,5 @@
 local AddonName, WorldMapPin = ...
+WorldMapPin:SetAddonOutput("WorldMapPin", 134269)
 local pinsize = 24
 local pinx = -1
 local piny = -1
@@ -178,6 +179,6 @@ WorldMapPin:UpdatePinPos()
 C_Timer.After(
 	0,
 	function()
-		D4:SetVersion(AddonName, 134269, "1.1.46")
+		WorldMapPin:SetVersion(AddonName, 134269, "1.1.47")
 	end
 )
