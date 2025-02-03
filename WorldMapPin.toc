@@ -4,7 +4,7 @@
 ## Interface-Cata: 40401
 ## Interface: 110007, 110100
 
-## Version: 1.1.62
+## Version: 1.1.63
 ## Title: WorldMapPin by |cff3FC7EBD4KiR |T132115:16:16:0:0|t 
 ## Notes: Can Make A World Map Pin
 ## Author: D4KiR
