@@ -1,14 +1,17 @@
 ## Interface: 30403
 
-## Version: 1.1.64
+## Version: 1.1.65
 ## Title: WorldMapPin |T134269:16:16:0:0|t by |cff3FC7EBD4KiR |T132115:16:16:0:0|t 
 ## Notes: Can Make A World Map Pin
-## Author: D4KiR
+## Author: D|cff3FC7EB4KiR |T132115:16:16:0:0|t
+## Category: D|cff3FC7EB4KiR |T132115:16:16:0:0|t
+## X-Category: D|cff3FC7EB4KiR |T132115:16:16:0:0|t
 ## DefaultState: enabled
 ## SavedVariables: WMPTAB
 ## SavedVariablesPerCharacter: WMPTABPC
 ## X-Curse-Project-ID: 603848
 ## X-Wago-ID: Rn6V8LGd
+## IconTexture: 134269
 
 libs\D4Lib\D4Lib.xml
 
