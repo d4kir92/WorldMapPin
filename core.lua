@@ -179,6 +179,6 @@ WorldMapPin:UpdatePinPos()
 C_Timer.After(
 	0,
 	function()
-		WorldMapPin:SetVersion(134269, "1.1.74")
+		WorldMapPin:SetVersion(134269, "1.1.75")
 	end
 )
