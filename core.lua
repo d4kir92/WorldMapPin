@@ -1,4 +1,4 @@
-local AddonName, WorldMapPin = ...
+local _, WorldMapPin = ...
 WorldMapPin:SetAddonOutput("WorldMapPin", 134269)
 local pinsize = 24
 local pinx = -1
@@ -71,6 +71,14 @@ WMP:SetSize(20, 20)
 WMP.texture = WMP:CreateTexture(nil, "OVERLAY")
 WMP.texture:SetAllPoints(WMP)
 WMP.texture:SetTexture("Interface\\COMMON\\Indicator-Green")
+local pinLoopRunning = false
+local function StartPinLoop()
+	if not pinLoopRunning then
+		pinLoopRunning = true
+		WorldMapPin:UpdatePinPos()
+	end
+end
+
 WorldMapFrame.ScrollContainer.Child:SetScript(
 	"OnUpdate",
 	function(self, btn)
@@ -86,6 +94,7 @@ WorldMapFrame.ScrollContainer.Child:SetScript(
 				else
 					pinx = x
 					piny = y
+					StartPinLoop()
 				end
 			end
 		else
@@ -95,7 +104,7 @@ WorldMapFrame.ScrollContainer.Child:SetScript(
 )
 
 function WorldMapPin:MapPlayerAlpha()
-	facing = GetPlayerFacing()
+	local facing = GetPlayerFacing()
 	if facing == nil then
 		facing = 0
 	end
@@ -103,51 +112,45 @@ function WorldMapPin:MapPlayerAlpha()
 	return facing / (2 * math.pi) * 360
 end
 
-function WorldMapPin:MapPinX()
+local function GetPlayerMapCoords()
 	local mapID = C_Map.GetBestMapForUnit("PLAYER")
-	if mapID then
-		local posx, posy = GetPlayerMapPos(mapID)
-		if posx and posy then
-			local sw = WorldMapFrame.ScrollContainer:GetWidth()
-			local sh = WorldMapFrame.ScrollContainer:GetHeight()
-			local ratio = sw / sh
-			local xc, yc = posx, posy -- Character X, Y
-			local xp, yp = pinx, piny -- Pin X, Y
-			yc = 1 - yc -- Fix for Y
-			local res = math.sqrt(math.pow(xc - xp, 2) + math.pow(math.abs(yc - yp), 2))
-			WMP_Dist = res * 1000
-			WMP_Dist_F = tonumber(format("%0.0f", WMP_Dist))
-			xc = (xc - 0.5) * ratio + 0.5
-			xp = (xp - 0.5) * ratio + 0.5
-			local ca = WorldMapPin:MapPlayerAlpha() -- 0-360
-			local rx = acos(((xc - xp) * sin(ca) + (yp - yc) * cos(ca)) / math.sqrt(math.pow(xp - xc, 2) + math.pow(yp - yc, 2)))
-			local cr = (xp - xc) * cos(ca) + (yp - yc) * sin(ca)
-			if cr > 0 then
-				rx = rx * -1
-			end
+	if not mapID then return nil end
 
-			return rx
-		else
-			return 0
-		end
-	else
-		return 0
+	return GetPlayerMapPos(mapID)
+end
+
+function WorldMapPin:MapPinX(posx, posy)
+	local sw = WorldMapFrame.ScrollContainer:GetWidth()
+	local sh = WorldMapFrame.ScrollContainer:GetHeight()
+	local ratio = sw / sh
+	local xc, yc = posx, posy
+	local xp, yp = pinx, piny
+	yc = 1 - yc -- Fix for Y
+	local ddx, ddy = xc - xp, yc - yp
+	local res = math.sqrt(ddx * ddx + ddy * ddy)
+	WMP_Dist = res * 1000
+	WMP_Dist_F = tonumber(format("%0.0f", WMP_Dist))
+	xc = (xc - 0.5) * ratio + 0.5
+	xp = (xp - 0.5) * ratio + 0.5
+	local ca = WorldMapPin:MapPlayerAlpha()
+	local adx, ady = xp - xc, yp - yc
+	local rx = acos(((xc - xp) * sin(ca) + (yp - yc) * cos(ca)) / math.sqrt(adx * adx + ady * ady))
+	local cr = (xp - xc) * cos(ca) + (yp - yc) * sin(ca)
+	if cr > 0 then
+		rx = rx * -1
 	end
+
+	return rx
 end
 
 function WorldMapPin:HasCoords()
-	local mapID = C_Map.GetBestMapForUnit("PLAYER")
-	if mapID then
-		local pos = GetPlayerMapPos(mapID)
-		if pos then return true end
-	end
-
-	return false
+	return GetPlayerMapCoords() ~= nil
 end
 
 function WorldMapPin:UpdatePinPos()
-	if WorldMapPin:HasCoords() and pinx >= 0 and piny >= 0 then
-		local alpha = WorldMapPin:MapPinX()
+	local posx, posy = GetPlayerMapCoords()
+	if posx and posy and pinx >= 0 and piny >= 0 then
+		local alpha = WorldMapPin:MapPinX(posx, posy)
 		if alpha > -3 and alpha < 3 then
 			WorldSpacePin.texture:SetTexture("Interface\\COMMON\\Indicator-Green")
 		elseif alpha > 85 or alpha < -85 then
@@ -156,9 +159,10 @@ function WorldMapPin:UpdatePinPos()
 			WorldSpacePin.texture:SetTexture("Interface\\COMMON\\Indicator-Yellow")
 		end
 
-		local x = GetScreenWidth() * UIParent:GetEffectiveScale() / 2 + alpha / -180 * GetScreenWidth() * UIParent:GetEffectiveScale()
+		local screenW = GetScreenWidth() * UIParent:GetEffectiveScale()
+		local x = screenW / 2 + alpha / -180 * screenW
 		local y = GetScreenHeight() * UIParent:GetEffectiveScale() / 2 - pinsize / 2
-		x = MathC(x, 0, GetScreenWidth() * UIParent:GetEffectiveScale() - pinsize)
+		x = MathC(x, 0, screenW - pinsize)
 		WorldSpacePin:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", x, y)
 		local scale = WorldMapFrame.ScrollContainer.Child:GetScale()
 		local sw = WorldMapFrame.ScrollContainer.Child:GetWidth() * scale
@@ -167,18 +171,17 @@ function WorldMapPin:UpdatePinPos()
 		WorldSpacePin:Show()
 		WMP:SetPoint("BOTTOMLEFT", WorldMapFrame.ScrollContainer.Child, "BOTTOMLEFT", sw * pinx - 10, sh * piny - 10)
 		WMP:Show()
+		C_Timer.After(0.01, WorldMapPin.UpdatePinPos)
 	else
 		WorldSpacePin:Hide()
 		WMP:Hide()
+		pinLoopRunning = false
 	end
-
-	C_Timer.After(0.01, WorldMapPin.UpdatePinPos)
 end
 
-WorldMapPin:UpdatePinPos()
 C_Timer.After(
 	0,
 	function()
-		WorldMapPin:SetVersion(134269, "1.1.83")
+		WorldMapPin:SetVersion(134269, "1.1.84")
 	end
 )

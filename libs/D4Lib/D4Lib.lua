@@ -9,7 +9,7 @@ local tremove = _G["tremove"]
 local CUSTOM_CLASS_COLORS = _G["CUSTOM_CLASS_COLORS"]
 local RAID_CLASS_COLORS = _G["RAID_CLASS_COLORS"]
 local GetAtlasInfo = _G["GetAtlasInfo"]
---[[ Basics ]]
+-- Basics 
 local buildNr = select(4, GetBuildInfo())
 local buildName = "CLASSIC"
 if buildNr >= 100000 then
@@ -131,22 +131,12 @@ function D4:After(time, callback, from)
     end
 
     if not ready then
-        D4:ExtraAfter(
-            time,
-            function()
-                callback()
-            end, from
-        )
+        D4:ExtraAfter(time, callback, from)
 
         return
     end
 
-    C_Timer.After(
-        time,
-        function()
-            callback()
-        end
-    )
+    C_Timer.After(time, callback)
 end
 
 function D4:GetCountAfter()
@@ -290,7 +280,7 @@ function D4:ForeachRegions(frame, callback, from)
     end
 end
 
---[[ QOL ]]
+-- QOL 
 local callbacks = {}
 local fSecure = CreateFrame("Frame")
 D4:RegisterEvent(fSecure, "PLAYER_REGEN_ENABLED")
