@@ -16,7 +16,6 @@ end
 -- libs
 local function MathIsNear(pos1, pos2, near)
 	if abs(pos2 - pos1) < near then return true end
-
 	return false
 end
 
@@ -26,7 +25,6 @@ local function MathC(num, min, max)
 	elseif num > max then
 		return max
 	end
-
 	return num
 end
 
@@ -46,7 +44,6 @@ local function GetPlayerMapPos(MapID)
 	P.x, P.y = UnitPosition("Player")
 	if P.x and P.y then
 		P:Subtract(R[1])
-
 		return (1 / R[2].y) * P.y, (1 / R[2].x) * P.x
 	else
 		return nil, nil
@@ -79,43 +76,36 @@ local function StartPinLoop()
 	end
 end
 
-WorldMapFrame.ScrollContainer.Child:SetScript(
-	"OnUpdate",
-	function(self, btn)
-		self.wmpswitch = self.wmpswitch or false
-		if IsMouseButtonDown("LeftButton") and IsControlKeyDown() then
-			local x, y = WorldMapFrame.ScrollContainer:GetNormalizedCursorPosition()
-			y = 1 - y
-			if self.wmpswitch == false then
-				self.wmpswitch = true
-				if MathIsNear(x, pinx, 0.01) and MathIsNear(y, piny, 0.01) then
-					pinx = -1
-					piny = -1
-				else
-					pinx = x
-					piny = y
-					StartPinLoop()
-				end
+WorldMapFrame.ScrollContainer.Child:SetScript("OnUpdate", function(self, btn)
+	self.wmpswitch = self.wmpswitch or false
+	if IsMouseButtonDown("LeftButton") and IsControlKeyDown() then
+		local x, y = WorldMapFrame.ScrollContainer:GetNormalizedCursorPosition()
+		y = 1 - y
+		if self.wmpswitch == false then
+			self.wmpswitch = true
+			if MathIsNear(x, pinx, 0.01) and MathIsNear(y, piny, 0.01) then
+				pinx = -1
+				piny = -1
+			else
+				pinx = x
+				piny = y
+				StartPinLoop()
 			end
-		else
-			self.wmpswitch = false
 		end
+	else
+		self.wmpswitch = false
 	end
-)
+end)
 
 function WorldMapPin:MapPlayerAlpha()
 	local facing = GetPlayerFacing()
-	if facing == nil then
-		facing = 0
-	end
-
+	if facing == nil then facing = 0 end
 	return facing / (2 * math.pi) * 360
 end
 
 local function GetPlayerMapCoords()
 	local mapID = C_Map.GetBestMapForUnit("PLAYER")
 	if not mapID then return nil end
-
 	return GetPlayerMapPos(mapID)
 end
 
@@ -136,10 +126,7 @@ function WorldMapPin:MapPinX(posx, posy)
 	local adx, ady = xp - xc, yp - yc
 	local rx = acos(((xc - xp) * sin(ca) + (yp - yc) * cos(ca)) / math.sqrt(adx * adx + ady * ady))
 	local cr = (xp - xc) * cos(ca) + (yp - yc) * sin(ca)
-	if cr > 0 then
-		rx = rx * -1
-	end
-
+	if cr > 0 then rx = rx * -1 end
 	return rx
 end
 
@@ -179,9 +166,4 @@ function WorldMapPin:UpdatePinPos()
 	end
 end
 
-C_Timer.After(
-	0,
-	function()
-		WorldMapPin:SetVersion(134269, "1.1.86")
-	end
-)
+C_Timer.After(0, function() WorldMapPin:SetVersion(134269, "1.1.87") end)
