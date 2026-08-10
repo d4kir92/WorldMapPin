@@ -1,8 +1,18 @@
 ## Interface: 50504
 
-## Version: 1.1.87
+## Version: 1.1.88
 ## Title: WorldMapPin |T134269:16:16:0:0|t by |cff55d2ffD4KiR |T132115:16:16:0:0|t 
-## Notes: Can Make A World Map Pin
+## Notes: You can place a world map pin, which shows the direction to that location in 3D.
+## Notes-deDE: Sie können eine Markierung auf der Weltkarte setzen, die die Richtung zu diesem Ort in 3D anzeigt.
+## Notes-esES: Puedes colocar un pin en el mapa del mundo, que muestra la dirección hacia ese lugar en 3D.
+## Notes-esMX: Puedes colocar un pin en el mapa del mundo, que muestra la dirección hacia ese lugar en 3D.
+## Notes-frFR: Vous pouvez placer une épingle sur la carte du monde, qui indique la direction vers cet endroit en 3D.
+## Notes-itIT: Puoi posizionare un pin sulla mappa del mondo, che mostra la direzione verso quel luogo in 3D.
+## Notes-koKR: 월드맵에 핀을 배치할 수 있으며, 해당 위치로의 방향을 3D로 표시합니다.
+## Notes-ptBR: Você pode colocar um pino no mapa mundial, que mostra a direção para aquele local em 3D.
+## Notes-ruRU: Вы можете разместить метку на карте мира, которая покажет направление к этому месту в 3D.
+## Notes-zhCN: 你可以在世界地图上放置一个图钉,以3D方式显示前往该位置的方向。
+## Notes-zhTW: 你可以在世界地圖上放置一個圖釘,以3D方式顯示前往該位置的方向。
 ## Author: D4KiR |T132115:16:16:0:0|t
 ## Category: Map
 ## Category-deDE: Karte
