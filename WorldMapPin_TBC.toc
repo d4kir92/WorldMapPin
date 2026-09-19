@@ -1,6 +1,6 @@
 ## Interface: 20506
 
-## Version: 1.1.88
+## Version: 1.1.89
 ## Title: WorldMapPin |T134269:16:16:0:0|t by |cff55d2ffD4KiR |T132115:16:16:0:0|t 
 ## Notes: You can place a world map pin, which shows the direction to that location in 3D.
 ## Notes-deDE: Sie können eine Markierung auf der Weltkarte setzen, die die Richtung zu diesem Ort in 3D anzeigt.

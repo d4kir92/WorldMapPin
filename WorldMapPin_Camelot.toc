@@ -1,13 +1,7 @@
-## Interface-Classic: 11509
-## Interface-BCC: 20506
-## Interface-Wrath: 30403
-## Interface-Titan: 38002
-## Interface-Cata: 40402
-## Interface-Mists: 50504
-## Interface: 120100
+## Interface: 16001
 
 ## Version: 1.1.89
-## Title: WorldMapPin by |cff55d2ffD4KiR |T132115:16:16:0:0|t 
+## Title: WorldMapPin |T134269:16:16:0:0|t by |cff55d2ffD4KiR |T132115:16:16:0:0|t 
 ## Notes: You can place a world map pin, which shows the direction to that location in 3D.
 ## Notes-deDE: Sie können eine Markierung auf der Weltkarte setzen, die die Richtung zu diesem Ort in 3D anzeigt.
 ## Notes-esES: Puedes colocar un pin en el mapa del mundo, que muestra la dirección hacia ese lugar en 3D.
