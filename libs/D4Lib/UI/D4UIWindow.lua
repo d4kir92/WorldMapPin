@@ -133,8 +133,22 @@ function UI.WindowMixin:UpdateInset(topExtra, bottomExtra)
         local point, relativeTo, relativePoint, x, y = anchor[1], anchor[2], anchor[3], anchor[4], anchor[5]
         if string.find(point, "TOP") then y = y - topExtra end
         if string.find(point, "BOTTOM") then y = y + bottomExtra end
+        if string.find(point, "LEFT") then x = x + (self.leftShift or 0) end
         self.insetFrame:SetPoint(point, relativeTo, relativePoint, x, y)
     end
+end
+
+function UI.WindowMixin:SetLeftShift(shift)
+    shift = math.max(0, shift or 0)
+    local delta = shift - (self.leftShift or 0)
+    if delta == 0 then return end
+    self.leftShift = shift
+    self.leftInset = self.leftInset + delta
+    self.contentTrim = self.contentTrim + delta
+    if self.scrollInset then self.scrollInset.left = self.scrollInset.left + delta end
+    self:UpdateContentWidth()
+    self:UpdateBodyLayout()
+    self:Layout()
 end
 
 function UI.WindowMixin:UpdateBodyLayout()
@@ -158,10 +172,19 @@ function UI.WindowMixin:UpdateBodyLayout()
     end
 
     self:UpdateInset(topExtra, bottomExtra)
+    local navWidth = self.GetNavWidth and self:GetNavWidth() or 0
+    if self.nav then
+        self.nav:SetShown(navWidth > 0)
+        self.nav:ClearAllPoints()
+        self.nav:SetPoint("TOPLEFT", self, "TOPLEFT", self.leftInset + 4, -(TOP_INSET + topExtra))
+        self.nav:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", self.leftInset + 4, (self.scrollInset and self.scrollInset.bottom or 7) + bottomExtra)
+        self.nav:SetWidth(math.max(1, navWidth - 8))
+    end
+
     if self.scrollFrame == nil then return end
     if self.scrollInset == nil then return end
     self.scrollFrame:ClearAllPoints()
-    self.scrollFrame:SetPoint("TOPLEFT", self, "TOPLEFT", self.scrollInset.left, -(TOP_INSET + topExtra))
+    self.scrollFrame:SetPoint("TOPLEFT", self, "TOPLEFT", self.scrollInset.left + navWidth, -(TOP_INSET + topExtra))
     self.scrollFrame:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", self.scrollInset.right, self.scrollInset.bottom + bottomExtra)
     if self.scrollBar == nil or self.grip == nil then return end
     local gripLift = math.max(0, GRIP_INSET - self.scrollInset.bottom - bottomExtra)
@@ -238,7 +261,7 @@ local function CreateGrip(win, name)
     win:SetScript(
         "OnSizeChanged",
         function(sel, width)
-            sel.contentWidth = width - sel.contentTrim
+            sel.contentWidth = width - sel.contentTrim - (sel.GetNavWidth and sel:GetNavWidth() or 0)
             sel:Layout()
         end
     )
@@ -251,8 +274,6 @@ end
 
 local function MakeWidthResizable(win, name, tab)
     local grip = CreateGrip(win, name)
-    local minWidth = tab.minWidth or 300
-    local maxWidth = tab.maxWidth or 0
     local function StopSizing()
         if grip:GetScript("OnUpdate") == nil then return end
         grip:SetScript("OnUpdate", nil)
@@ -265,6 +286,10 @@ local function MakeWidthResizable(win, name, tab)
             local scale = win:GetEffectiveScale()
             local startX = GetCursorPosition() / scale
             local startWidth = win:GetWidth()
+            local shift = win.leftShift or 0
+            local minWidth = (tab.minWidth or 300) + shift
+            local maxWidth = tab.maxWidth or 0
+            if maxWidth > 0 then maxWidth = maxWidth + shift end
             grip:SetScript(
                 "OnUpdate",
                 function()
@@ -479,6 +504,7 @@ function D4:CreateUIWindow(tab)
     win.setCollapsed = tab.setCollapsed
     if tab.resizable ~= false then MakeResizable(win, name, tab) end
     SetupScreenBounds(win, tab)
+    if tab.navigation == true then win:EnableNavigation() end
     win:HookScript("OnHide", function() UI:CloseDropdowns() end)
     local escClose = tab.escClose
     if escClose == nil then escClose = tab.onClose == nil end
